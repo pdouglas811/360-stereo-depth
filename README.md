@@ -6,4 +6,6 @@ Also making use of some code developed by Sara Ismail for optimising the camera 
 
 ## New stuff
 
-Work through the code to capture image pairs of chessboards to make calibration repeatable
+Work through the code to capture image pairs of chessboards to make calibration repeatable.
+
+I really want this github to allow me to push my code up from my pc.
