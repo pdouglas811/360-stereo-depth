@@ -420,8 +420,11 @@ while (not(do_calibration)):
         # save chessboard pairs to directory for use later
 
         def save_my_img(frame_count, path, img):
-            name = f'/img_title_{frame_count}.jpg'
+            name = f'{frame_count}.jpg'
             cv2.imwrite(os.path.join(path, name), img)
+
+    save_my_img(chessboard_pattern_detections_paired, path, frameL)
+    save_my_img(chessboard_pattern_detections_paired, path, frameR)    
 
 
 
