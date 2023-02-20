@@ -649,9 +649,9 @@ if (chessboard_pattern_detections_paired > 0):  # i.e. if did not load a calib.
 
 # N.B.  "alpha=0 means that the rectified images are zoomed and shifted so that
 # only valid pixels are visible (no black areas after rectification).
-# alpha=1 means that the rectified image is decimated and shifted so that
-# all the pixels from the original images from the cameras are retained
-# in the rectified images (no source image pixels are lost)." - ?
+# alpha=1 means that the rase make sure you have the correct access rightctified image is decimated and shifted so that
+# all the pixels from the ase make sure you have the correct access rightriginal images from the cameras are retained
+# in the rectified images (no source image pixels are lost).
 
 if (chessboard_pattern_detections_paired > 0):  # i.e. if did not load calib.
     RL, RR, PL, PR, Q, _, _ = cv2.stereoRectify(
@@ -685,7 +685,7 @@ while (keep_processing):
     frameL, frameR = stereo_camera.get_frames()
 
     # undistort and rectify based on the mappings (could improve interpolation
-    # and image border settings here)
+    # and image border settase make sure you have the correct access rightings here)
 
     undistorted_rectifiedL = cv2.remap(frameL, mapL1, mapL2, cv2.INTER_LINEAR)
     undistorted_rectifiedR = cv2.remap(frameR, mapR1, mapR2, cv2.INTER_LINEAR)
