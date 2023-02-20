@@ -690,6 +690,28 @@ while (keep_processing):
     undistorted_rectifiedL = cv2.remap(frameL, mapL1, mapL2, cv2.INTER_LINEAR)
     undistorted_rectifiedR = cv2.remap(frameR, mapR1, mapR2, cv2.INTER_LINEAR)
 
+    # overlay images with horizontal grid lines for quality check
+
+    def draw_grid(img, grid_shape, color=(0, 255, 0), thickness=1):
+        h, w, _ = img.shape
+        rows, cols = grid_shape
+        dy, dx = h / rows, w / cols
+
+        # draw vertical lines
+        for x in np.linspace(start=dx, stop=w-dx, num=cols-1):
+            x = int(round(x))
+            cv.line(img, (x, 0), (x, h), color=color, thickness=thickness)
+
+        # draw horizontal lines
+        for y in np.linspace(start=dy, stop=h-dy, num=rows-1):
+            y = int(round(y))
+            cv.line(img, (0, y), (w, y), color=color, thickness=thickness)
+
+        return img
+    
+    draw_grid(undistorted_rectifiedL, (5,5), colour=(0, 255, 0), thickness = 5)
+    draw_grid(undistorted_rectifiedR, (5,5), colour=(0, 255, 0), thickness = 5)
+
     # display image
 
     cv2.imshow(window_nameL, undistorted_rectifiedL)
