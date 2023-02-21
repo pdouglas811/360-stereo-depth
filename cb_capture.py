@@ -461,3 +461,5 @@ termination_criteria_intrinsic = (
     cv2.TERM_CRITERIA_MAX_ITER,
     args.iterations,
     args.minimum_error)
+
+print("Hello")
