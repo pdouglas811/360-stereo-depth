@@ -460,4 +460,4 @@ termination_criteria_intrinsic = (
     cv2.TERM_CRITERIA_EPS +
     cv2.TERM_CRITERIA_MAX_ITER,
     args.iterations,
-    args.minimum_error) display detections / chessboards
+    args.minimum_error)

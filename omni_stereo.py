@@ -590,7 +590,7 @@ if (chessboard_pattern_detections_paired > 0):  # i.e. if did not load a calib.
      R,
      T,
      E,
-     F) = cv2.omnidir.stereoCalibrate(objpoints_pairs,
+     F) = cv2.stereoCalibrate(objpoints_pairs,
                               imgpoints_left_paired,
                               imgpoints_right_paired,
                               mtxL,
