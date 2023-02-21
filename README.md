@@ -9,3 +9,5 @@ Also making use of some code developed by Sara Ismail for optimising the camera 
 Work through the code to capture image pairs of chessboards to make calibration repeatable.
 
 I really want this github to allow me to push my code up from my pc.
+
+I have manually moved my work to my laptop and pushed it up to github from there.
