@@ -692,7 +692,7 @@ while (keep_processing):
 
     # overlay images with horizontal grid lines for quality check
 
-    def draw_grid(img, grid_shape, color=(0, 255, 0), thickness=1):
+    def draw_grid(img, grid_shape, color, thickness):
         h, w, _ = img.shape
         rows, cols = grid_shape
         dy, dx = h / rows, w / cols
@@ -700,12 +700,12 @@ while (keep_processing):
         # draw vertical lines
         for x in np.linspace(start=dx, stop=w-dx, num=cols-1):
             x = int(round(x))
-            cv.line(img, (x, 0), (x, h), color=color, thickness=thickness)
+            cv.line(img, (x, 0), (x, h), colour=colour, thickness=thickness)
 
         # draw horizontal lines
         for y in np.linspace(start=dy, stop=h-dy, num=rows-1):
             y = int(round(y))
-            cv.line(img, (0, y), (w, y), color=color, thickness=thickness)
+            cv.line(img, (0, y), (w, y), colour=colour, thickness=thickness)
 
         return img
     
