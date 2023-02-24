@@ -2,13 +2,13 @@ import numpy as np
 import cv2
 
 # Define the number of calibration images
-num_calibration_images = 10
+num_calibration_images = 53
 
 # Define the number of corners in the calibration pattern
-pattern_size = (8, 6)
+pattern_size = (6, 8)
 
 # Define the size of each square on the calibration pattern in meters
-square_size = 0.025
+square_size = 0.0808
 
 # Define the omnidirectional camera model
 omnidir_model = cv2.omnidir.DUAL_EQUIRECTANGULAR
@@ -28,8 +28,8 @@ objp *= square_size
 
 # Load the calibration images from both cameras
 for i in range(num_calibration_images):
-    img_left = cv2.imread(f'calibration_left_{i}.jpg')
-    img_right = cv2.imread(f'calibration_right_{i}.jpg')
+    img_left = cv2.imread(f"/media/AC10-0657/Images/Set_1/Left/{i}")
+    img_right = cv2.imread(f"/media/AC10-0657/Images/Set_1/Right{i}")
 
     # Find the corners of the calibration pattern in both images
     ret_left, corners_left = cv2.findChessboardCorners(img_left, pattern_size)
