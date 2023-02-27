@@ -7,16 +7,25 @@ objpoints = []  # 3D points in real world space
 imgpoints1 = []  # 2D points in image plane for camera 1
 imgpoints2 = []  # 2D points in image plane for camera 2
 
+# Define image and chessboard quantities
+
+num_images = 53
+cbx = 6
+cby = 8
+pattern_size = (cbx, cby)
+objp = np.zeros((pattern_size[0]*pattern_size[1], 3), np.float32)
+objp[:, :2] = np.mgrid[0:pattern_size[0], 0:pattern_size[1]].T.reshape(-1, 2)
+
 # Define omnidirectional camera model
-K1 = np.array([[fx1, 0, cx1], [0, fy1, cy1], [0, 0, 1]])
-xi1 = np.array([xi1])
-D1 = np.array([k11, k12, k13, k14])
+K1 = np.array([[700, 1, 320], [0, 700, 320], [0, 0, 1]])
+xi1 = np.array([2.9355])
+D1 = np.array([-0.305, 0.0695, -0.0025, -0.0035])
 camera_matrix1 = K1
 dist_coeffs1 = D1
 
-K2 = np.array([[fx2, 0, cx2], [0, fy2, cy2], [0, 0, 1]])
-xi2 = np.array([xi2])
-D2 = np.array([k21, k22, k23, k24])
+K2 = np.array([[700, 1, 320], [0, 700, 320], [0, 0, 1]])
+xi2 = np.array([2.991])
+D2 = np.array([-0.3025, 0.067, 0, -0.002])
 camera_matrix2 = K2
 dist_coeffs2 = D2
 
@@ -24,15 +33,14 @@ dist_coeffs2 = D2
 images1 = []
 images2 = []
 for i in range(1, num_images+1):
-    img1 = cv2.imread('camera1_%02d.png' % i)
-    img2 = cv2.imread('camera2_%02d.png' % i)
+    img1 = cv2.imread(f"/media/AC10-0657/Images/Set_1/Left/{i}")
+    img2 = cv2.imread(f"/media/AC10-0657/Images/Set_1/Right/{i}")
     images1.append(img1)
     images2.append(img2)
 
 # Find chessboard corners in calibration images
-pattern_size = (chessboard_cols, chessboard_rows)
-objp = np.zeros((pattern_size[0]*pattern_size[1], 3), np.float32)
-objp[:, :2] = np.mgrid[0:pattern_size[0], 0:pattern_size[1]].T.reshape(-1, 2)
+
+
 for i in range(num_images):
     img1 = images1[i]
     img2 = images2[i]
@@ -52,5 +60,4 @@ for i in range(num_images):
 # Perform stereo calibration
 criteria_calib = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 30, 1e-5)
 flags = cv2.omnidir.CALIB_FIX_SKEW + cv2.omnidir.CALIB_USE_GUESS + cv2.omnidir.CALIB_FIX_PRINCIPAL_POINT
-(rms, K, xi, D, rvecs, tvecs) = cv2.omnidir.stereoCalibrate(
-    objpoints, imgpoints1, imgpoints2, camera_matrix
+(rms, K, xi, D, rvecs, tvecs) = cv2.omnidir.stereoCalibrate(objpoints, imgpoints1, imgpoints2, camera_matrix)
