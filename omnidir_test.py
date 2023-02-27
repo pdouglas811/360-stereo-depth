@@ -43,8 +43,8 @@ for i in range(1, num_frames + 1):
         
         # Find the chess board corners in the images
 
-        retL, cornersL = cv2.findChessboardCorners(grayL, (cbx, cby), None, cv2.CALIB_CB_ADAPTIVE_THRESH| cv2.CALIB_CB_FAST_CHECK | cv2.CALIB_CB_NORMALIZE_IMAGE)
-        retR, cornersR = cv2.findChessboardCorners(grayR, (cbx, cby), None, cv2.CALIB_CB_ADAPTIVE_THRESH| cv2.CALIB_CB_FAST_CHECK | cv2.CALIB_CB_NORMALIZE_IMAGE)
+        retL, cornersL = cv2.findChessboardCorners(grayL, (cbx, cby))
+        retR, cornersR = cv2.findChessboardCorners(grayR, (cbx, cby))
 
         if ((retR) and (retL)):
 
@@ -106,10 +106,8 @@ knew = np.array([[imgWidth / (np.pi), 0, 0], [0, imgHeight / (np.pi), 0], [0, 0,
 mapL1, mapL2 = cv2.omnidir.initUndistortRectifyMap(K1, D1, xiL, R1F, knew, (imgHeight, imgWidth), cv2.CV_32FC1, cv2.omnidir.RECTIFY_LONGLATI)
 mapR1, mapR2 = cv2.omnidir.initUndistortRectifyMap(K2, D2, xiR, R2F, knew, (imgHeight, imgWidth), cv2.CV_32FC1, cv2.omnidir.RECTIFY_LONGLATI)
 
-undistorted_L = cv2.remap(frameL, mapL1, mapL2, cv2.INTER_LINEAR, borderMode=cv2.BORDER_WRAP + cv2.BORDER_CONSTANT)
-undistorted_R = cv2.remap(frameR, mapR1, mapR2, cv2.INTER_LINEAR, borderMode=cv2.BORDER_WRAP + cv2.BORDER_CONSTANT)
-
-
+undistorted_L = cv2.remap(frameL, mapL1, mapL2, cv2.INTER_LINEAR)
+undistorted_R = cv2.remap(frameR, mapR1, mapR2, cv2.INTER_LINEAR)
 
 cv2.imshow("Left", undistorted_L)
 cv2.imshow("Right", undistorted_R)

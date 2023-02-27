@@ -374,11 +374,11 @@ while (not(do_calibration)):
     # (change flags to perhaps improve detection - see OpenCV manual)
 
     retR, cornersR = cv2.findChessboardCorners(
-        grayR, (patternX, patternY), None, cv2.CALIB_CB_ADAPTIVE_THRESH
-        | cv2.CALIB_CB_FAST_CHECK | cv2.CALIB_CB_NORMALIZE_IMAGE)
+        grayR, (patternX, patternY)#, None, cv2.CALIB_CB_ADAPTIVE_THRESH
+        #| cv2.CALIB_CB_FAST_CHECK | cv2.CALIB_CB_NORMALIZE_IMAGE)
     retL, cornersL = cv2.findChessboardCorners(
-        grayL, (patternX, patternY), None, cv2.CALIB_CB_ADAPTIVE_THRESH
-        | cv2.CALIB_CB_FAST_CHECK | cv2.CALIB_CB_NORMALIZE_IMAGE)
+        grayL, (patternX, patternY)#, None, cv2.CALIB_CB_ADAPTIVE_THRESH
+        #| cv2.CALIB_CB_FAST_CHECK | cv2.CALIB_CB_NORMALIZE_IMAGE)
 
     # when found, add object points, image points (after refining them)
 
