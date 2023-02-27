@@ -33,8 +33,8 @@ dist_coeffs2 = D2
 images1 = []
 images2 = []
 for i in range(1, num_images+1):
-    img1 = cv2.imread(f"/media/AC10-0657/Images/Set_1/Left/{i}")
-    img2 = cv2.imread(f"/media/AC10-0657/Images/Set_1/Right/{i}")
+    img1 = cv2.imread(f"/media/AC10-0657/images/Set_1/Left/{i}")
+    img2 = cv2.imread(f"/media/AC10-0657/images/Set_1/Right/{i}")
     images1.append(img1)
     images2.append(img2)
 
