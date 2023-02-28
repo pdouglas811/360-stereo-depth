@@ -10,8 +10,8 @@ square_size_in_mm = 80.8
 
 # Define Termination criteria for calibrations
 
-iterations = 1000
-minimum_error = 0.0001
+iterations = 100
+minimum_error = 0.001
 termination_criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, iterations, minimum_error)
 calib_flags = cv2.omnidir.CALIB_FIX_SKEW # + cv2.omnidir.CALIB_USE_GUESS
 
