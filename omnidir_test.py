@@ -64,51 +64,77 @@ for i in range(1, num_frames + 1):
 
 print("Pairs Detected: " + str(len(objpoints)))
 
-# Need to resize objPoints from (num_detected_images, num_chessboard_squares, 3) to (num_detected_images, 1, num_chessboard_squares, 3) 
-# to avoid an error in omnidir.stereoCalibrate
+termination_criteria_intrinsic = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, iterations, minimum_error)
 
-objpoints = np.reshape(objpoints,(len(objpoints), 1, cby * cbx, 3))
+print("START - intrinsic calibration ...")
 
-
-# Need to resize imgPoints from (num_detected_images, num_chessboard_squares, 2) to (num_detected_images, 1, num_chessboard_squares, 2) for same L = nL), 1, cby * cbx, 2))
-
-imgpoints_L = np.reshape(imgpoints_L, (len(imgpoints_L), 1, cby * cbx, 2))
-imgpoints_R = np.reshape(imgpoints_R, (len(imgpoints_R), 1, cby * cbx, 2))
-
-# now calibrate
-
-retval, objPoints, imgPoints_1, imgPoints_2, K1, \
-xiL, D1, K2, xiR, D2, rvec, \
-tvec, rvecs, tvecs, idx = cv2.omnidir.stereoCalibrate(objpoints,imgpoints_L,imgpoints_R,
-                                                              grayL.shape[::-1], grayR.shape[::-1],
-                                                              None, None, None, None, None, None, #K1, xi_1, D1, K1, xi_2, D2,
-                                                              calib_flags, termination_criteria)
+rms_int_L, mtxL, distL, rvecsL, tvecsL = cv2.calibrateCamera(
+        objpoints, imgpoints_L, grayL.shape[::-1],
+        None, None, criteria=termination_criteria_intrinsic)
+rms_int_R, mtxR, distR, rvecsR, tvecsR = cv2.calibrateCamera(
+        objpoints, imgpoints_R, grayR.shape[::-1],
+        None, None, criteria=termination_criteria_intrinsic)
+print("FINISHED - intrinsic calibration")
 
 print()
-print("K (left camera)")
-print(K1)
-print("distortion coeffs (left camera)")
-print(D1)
+print("LEFT: RMS left intrinsic calibation re-projection error: ",  rms_int_L)
+print("RIGHT: RMS right intrinsic calibation re-projection error: ", rms_int_R)
 print()
-print("K (right camera)")
-print(K2)
-print("distortion coeffs (right camera)")
-print(D1)                          
-print()
-print(grayL.shape[::-1])
 
-(imgHeight, imgWidth) = grayR.shape[::-1]
+undistortedL = cv2.undistort(frameL, mtxL, distL, None, None)
+undistortedR = cv2.undistort(frameR, mtxR, distR, None, None)
 
-R1F, R2F = cv2.omnidir.stereoRectify(rvec, tvec)
+# display image
 
-knew = np.array([[imgWidth / (np.pi), 0, 0], [0, imgHeight / (np.pi), 0], [0, 0, 1]], np.double)
-
-mapL1, mapL2 = cv2.omnidir.initUndistortRectifyMap(K1, D1, xiL, R1F, knew, (imgHeight, imgWidth), cv2.CV_32FC1, cv2.omnidir.RECTIFY_LONGLATI)
-mapR1, mapR2 = cv2.omnidir.initUndistortRectifyMap(K2, D2, xiR, R2F, knew, (imgHeight, imgWidth), cv2.CV_32FC1, cv2.omnidir.RECTIFY_LONGLATI)
-
-undistorted_L = cv2.remap(frameL, mapL1, mapL2, cv2.INTER_LINEAR)
-undistorted_R = cv2.remap(frameR, mapR1, mapR2, cv2.INTER_LINEAR)
-
-cv2.imshow("Left", undistorted_L)
-cv2.imshow("Right", undistorted_R)
+cv2.imshow("Left", undistortedL)
+cv2.imshow("Right", undistortedR)
 cv2.waitKey(0)
+
+# # Need to resize objPoints from (num_detected_images, num_chessboard_squares, 3) to (num_detected_images, 1, num_chessboard_squares, 3) 
+# # to avoid an error in omnidir.stereoCalibrate
+
+# objpoints = np.reshape(objpoints,(len(objpoints), 1, cby * cbx, 3))
+
+
+# # Need to resize imgPoints from (num_detected_images, num_chessboard_squares, 2) to (num_detected_images, 1, num_chessboard_squares, 2) for same L = nL), 1, cby * cbx, 2))
+
+# imgpoints_L = np.reshape(imgpoints_L, (len(imgpoints_L), 1, cby * cbx, 2))
+# imgpoints_R = np.reshape(imgpoints_R, (len(imgpoints_R), 1, cby * cbx, 2))
+
+# # now calibrate
+
+# retval, objPoints, imgPoints_1, imgPoints_2, K1, \
+# xiL, D1, K2, xiR, D2, rvec, \
+# tvec, rvecs, tvecs, idx = cv2.omnidir.stereoCalibrate(objpoints,imgpoints_L,imgpoints_R,
+#                                                               grayL.shape[::-1], grayR.shape[::-1],
+#                                                               None, None, None, None, None, None, #K1, xi_1, D1, K1, xi_2, D2,
+#                                                               calib_flags, termination_criteria)
+
+# print()
+# print("K (left camera)")
+# print(K1)
+# print("distortion coeffs (left camera)")
+# print(D1)
+# print()
+# print("K (right camera)")
+# print(K2)
+# print("distortion coeffs (right camera)")
+# print(D1)                          
+# print()
+# print(grayL.shape[::-1])
+
+# (imgHeight, imgWidth) = grayR.shape[::-1]
+
+# R1F, R2F = cv2.omnidir.stereoRectify(rvec, tvec)
+
+# knew = np.array([[imgWidth / (np.pi), 0, 0], [0, imgHeight / (np.pi), 0], [0, 0, 1]], np.double)
+
+# mapL1, mapL2 = cv2.omnidir.initUndistortRectifyMap(K1, D1, xiL, R1F, knew, (imgHeight, imgWidth), cv2.CV_32FC1, cv2.omnidir.RECTIFY_LONGLATI)
+# mapR1, mapR2 = cv2.omnidir.initUndistortRectifyMap(K2, D2, xiR, R2F, knew, (imgHeight, imgWidth), cv2.CV_32FC1, cv2.omnidir.RECTIFY_LONGLATI)
+
+# undistorted_L = cv2.remap(frameL, mapL1, mapL2, cv2.INTER_LINEAR)
+# undistorted_R = cv2.remap(frameR, mapR1, mapR2, cv2.INTER_LINEAR)
+
+# cv2.imshow("Left", undistorted_L)
+# cv2.imshow("Right", undistorted_R)
+# cv2.waitKey(0)
