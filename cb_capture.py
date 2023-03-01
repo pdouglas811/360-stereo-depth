@@ -423,9 +423,9 @@ while (not(do_calibration)):
             name = f'{frame_count}.jpg'
             cv2.imwrite(os.path.join(path, name), img)
 
-        save_my_img(chessboard_pattern_detections_paired, "/media/AC10-0657/Images/Set_2/Left", frameL)
+        save_my_img(chessboard_pattern_detections_paired, "/media/AC10-0657/images/Set_2/Left", frameL)
 
-        save_my_img(chessboard_pattern_detections_paired, "/media/AC10-0657/Images/Set_2/Right", frameR)  
+        save_my_img(chessboard_pattern_detections_paired, "/media/AC10-0657/images/Set_2/Right", frameR)  
 
     # display detections / chessboards
 

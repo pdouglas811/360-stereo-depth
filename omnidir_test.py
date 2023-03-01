@@ -3,7 +3,7 @@ import numpy as np
 
 # Define calibration dataset parameters
 
-num_frames = 53
+num_frames = 64
 cbx = 6
 cby = 8
 square_size_in_mm = 80.8
@@ -33,8 +33,8 @@ for i in range(1, num_frames + 1):
         
         # Fetch image pairs from relevant directory
 
-        frameL = cv2.imread(f"/media/AC10-0657/images/Set_1/Left/{i}.jpg")
-        frameR = cv2.imread(f"/media/AC10-0657/images/Set_1/Right/{i}.jpg")
+        frameL = cv2.imread(f"/media/AC10-0657/images/Set_2/Left/{i}.jpg")
+        frameR = cv2.imread(f"/media/AC10-0657/images/Set_2/Right/{i}.jpg")
 
         # Convert image pairs to grayscale
 
