@@ -64,29 +64,29 @@ for i in range(1, num_frames + 1):
 
 print("Pairs Detected: " + str(len(objpoints)))
 
-termination_criteria_intrinsic = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, iterations, minimum_error)
+# termination_criteria_intrinsic = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, iterations, minimum_error)
 
-print("START - intrinsic calibration ...")
+# print("START - intrinsic calibration ...")
 
-rms_int_L, mtxL, distL, rvecsL, tvecsL = cv2.calibrateCamera(
-        objpoints, imgpoints_L, grayL.shape[::-1],
-        None, None, criteria=termination_criteria_intrinsic)
-rms_int_R, mtxR, distR, rvecsR, tvecsR = cv2.calibrateCamera(
-        objpoints, imgpoints_R, grayR.shape[::-1],
-        None, None, criteria=termination_criteria_intrinsic)
-print("FINISHED - intrinsic calibration")
+# rms_int_L, mtxL, distL, rvecsL, tvecsL = cv2.calibrateCamera(
+#         objpoints, imgpoints_L, grayL.shape[::-1],
+#         None, None, criteria=termination_criteria_intrinsic)
+# rms_int_R, mtxR, distR, rvecsR, tvecsR = cv2.calibrateCamera(
+#         objpoints, imgpoints_R, grayR.shape[::-1],
+#         None, None, criteria=termination_criteria_intrinsic)
+# print("FINISHED - intrinsic calibration")
 
-print()
-print("LEFT: RMS left intrinsic calibation re-projection error: ",  rms_int_L)
-print("RIGHT: RMS right intrinsic calibation re-projection error: ", rms_int_R)
-print()
+# print()
+# print("LEFT: RMS left intrinsic calibation re-projection error: ",  rms_int_L)
+# print("RIGHT: RMS right intrinsic calibation re-projection error: ", rms_int_R)
+# print()
 
-undistorted_L = cv2.undistort(frameL, mtxL, distL, None, None)
-undistorted_R = cv2.undistort(frameR, mtxR, distR, None, None)
+# undistorted_L = cv2.undistort(frameL, mtxL, distL, None, None)
+# undistorted_R = cv2.undistort(frameR, mtxR, distR, None, None)
 
 
-undistorted_grayL = cv2.cvtColor(undistorted_L, cv2.COLOR_BGR2GRAY)
-undistorted_grayR = cv2.cvtColor(undistorted_R, cv2.COLOR_BGR2GRAY)
+# undistorted_grayL = cv2.cvtColor(undistorted_L, cv2.COLOR_BGR2GRAY)
+# undistorted_grayR = cv2.cvtColor(undistorted_R, cv2.COLOR_BGR2GRAY)
 
 
 # display image
@@ -132,9 +132,9 @@ print(K2)
 print("distortion coeffs (right camera)")
 print(D1)                          
 print()
-print(undistorted_grayL.shape[::-1])
+print(grayL.shape[::-1])
 
-(imgHeight, imgWidth) = undistorted_grayL.shape[::-1]
+(imgHeight, imgWidth) = grayL.shape[::-1]
 
 R1F, R2F = cv2.omnidir.stereoRectify(rvec, tvec)
 
@@ -143,8 +143,10 @@ knew = np.array([[imgWidth / (np.pi), 0, 0], [0, imgHeight / (np.pi), 0], [0, 0,
 mapL1, mapL2 = cv2.omnidir.initUndistortRectifyMap(K1, D1, xiL, R1F, knew, (imgHeight, imgWidth), cv2.CV_32FC1, cv2.omnidir.RECTIFY_STEREOGRAPHIC)
 mapR1, mapR2 = cv2.omnidir.initUndistortRectifyMap(K2, D2, xiR, R2F, knew, (imgHeight, imgWidth), cv2.CV_32FC1, cv2.omnidir.RECTIFY_STEREOGRAPHIC)
 
-undistorted_rectified_L = cv2.remap(undistorted_L, mapL1, mapL2, cv2.INTER_LINEAR)
-undistorted_rectified_R = cv2.remap(undistorted_R, mapR1, mapR2, cv2.INTER_LINEAR)
+undistorted_rectified_L = cv2.remap(frameL, mapL1, mapL2, cv2.INTER_LINEAR,
+                                          borderMode=cv2.BORDER_WRAP + cv2.BORDER_CONSTANT)
+undistorted_rectified_R = cv2.remap(frameR, mapR1, mapR2, cv2.INTER_LINEAR,
+                                          borderMode=cv2.BORDER_WRAP + cv2.BORDER_CONSTANT)
 
 cv2.imshow("Left", undistorted_rectified_L)
 cv2.imshow("Right", undistorted_rectified_R)

@@ -86,8 +86,10 @@ class StereoCamera:
             self.camL = camera_stream.CameraVideoStream()
             self.camR = camera_stream.CameraVideoStream()
             if not(
-                (self.camL.open("thetauvcsrc ! decodebin ! autovideoconvert ! video/x-raw,format=BGRx ! videoconvert ! video/x-raw,format=BGR ! appsink", cv2.CAP_GSTREAMER)) and (
-                    self.camR.open("thetauvcsrc ! decodebin ! autovideoconvert ! video/x-raw,format=BGRx ! videoconvert ! video/x-raw,format=BGR ! appsink", cv2.CAP_GSTREAMER))):
+                # (self.camL.open("thetauvcsrc ! decodebin ! autovideoconvert ! video/x-raw,format=BGRx ! videoconvert ! video/x-raw,format=BGR ! appsink", cv2.CAP_GSTREAMER)) and (
+                  #  self.camR.open("thetauvcsrc ! decodebin ! autovideoconvert ! video/x-raw,format=BGRx ! videoconvert ! video/x-raw,format=BGR ! appsink", cv2.CAP_GSTREAMER))):
+                (self.camL.open(0)) and (
+                    self.camR.open(1))):
                 print(
                     "Cannot open pair of system cameras connected \
                     starting at camera #:",
