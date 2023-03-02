@@ -35,6 +35,21 @@ import camera_stream
 calibration_capture_framerate = 2
 
 #####################################################################
+# Define function for drawing lines on rectified output images
+
+def draw_lines(img, grid_shape, color, thickness):
+    h, w, _ = img.shape
+    rows, cols = grid_shape
+    dy, dx = h / rows, w / cols
+
+    # draw vertical lines
+    for x in np.linspace(start=dx, stop=w-dx, num=cols-1):
+        x = int(round(x))
+        cv2.line(img, (x, 0), (x, h), color=color, thickness=thickness)
+
+    return img
+
+#####################################################################
 # wrap different kinds of stereo camera - standard (v4l/vfw), ximea, ZED
 
 
@@ -520,10 +535,15 @@ while (keep_processing):
     undistortedL = cv2.undistort(frameL, mtxL, distL, None, None)
     undistortedR = cv2.undistort(frameR, mtxR, distR, None, None)
 
+    # draw lines on image to observe quality of undistortion
+
+    undistortedL_lines = draw_lines(undistortedL, (10,10), (0, 0, 255), 1)
+    undistortedR_lines = draw_lines(undistortedR, (10,10), (0, 0, 255), 1)
+
     # display image
 
-    cv2.imshow(window_nameL, undistortedL)
-    cv2.imshow(window_nameR, undistortedR)
+    cv2.imshow(window_nameL, undistortedL_lines)
+    cv2.imshow(window_nameR, undistortedR_lines)
 
     # stop the timer and convert to ms. (to see how long processing and
     # display takes)
@@ -700,27 +720,10 @@ while (keep_processing):
     undistorted_rectifiedL = cv2.remap(frameL, mapL1, mapL2, cv2.INTER_LINEAR)
     undistorted_rectifiedR = cv2.remap(frameR, mapR1, mapR2, cv2.INTER_LINEAR)
 
-    # overlay images with horizontal grid lines for quality check
+    # draw lines on image to observe quality of undistortion and rectification
 
-    def draw_grid(img, grid_shape, color, thickness):
-        h, w, _ = img.shape
-        rows, cols = grid_shape
-        dy, dx = h / rows, w / cols
-
-        # draw vertical lines
-        for x in np.linspace(start=dx, stop=w-dx, num=cols-1):
-            x = int(round(x))
-            cv.line(img, (x, 0), (x, h), colour=colour, thickness=thickness)
-
-        # draw horizontal lines
-        for y in np.linspace(start=dy, stop=h-dy, num=rows-1):
-            y = int(round(y))
-            cv.line(img, (0, y), (w, y), colour=colour, thickness=thickness)
-
-        return img
-    
-    draw_grid(undistorted_rectifiedL, (5,5), colour=(0, 255, 0), thickness = 5)
-    draw_grid(undistorted_rectifiedR, (5,5), colour=(0, 255, 0), thickness = 5)
+    undistorted_rectifiedL_lines = draw_lines(undistorted_rectifiedL, (10,10), (0, 0, 255), 1)
+    undistorted_rectifiedR_lines = draw_lines(undistorted_rectifiedR, (10,10), (0, 0, 255), 1)
 
     # display image
 
