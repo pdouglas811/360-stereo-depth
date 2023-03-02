@@ -43,9 +43,9 @@ def draw_lines(img, grid_shape, color, thickness):
     dy, dx = h / rows, w / cols
 
     # draw vertical lines
-    for x in np.linspace(start=dx, stop=w-dx, num=cols-1):
-        x = int(round(x))
-        cv2.line(img, (x, 0), (x, h), color=color, thickness=thickness)
+    for y in np.linspace(start=dy, stop=h-dy, num=rows-1):
+        y = int(round(y))
+        cv2.line(img, (y, 0), (y, w), color=color, thickness=thickness)
 
     return img
 
@@ -389,11 +389,11 @@ while (not(do_calibration)):
     # (change flags to perhaps improve detection - see OpenCV manual)
 
     retR, cornersR = cv2.findChessboardCorners(
-        grayR, (patternX, patternY)#, None, cv2.CALIB_CB_ADAPTIVE_THRESH
-        #| cv2.CALIB_CB_FAST_CHECK | cv2.CALIB_CB_NORMALIZE_IMAGE)
+        grayR, (patternX, patternY), None, cv2.CALIB_CB_ADAPTIVE_THRESH
+        | cv2.CALIB_CB_FAST_CHECK | cv2.CALIB_CB_NORMALIZE_IMAGE)
     retL, cornersL = cv2.findChessboardCorners(
-        grayL, (patternX, patternY)#, None, cv2.CALIB_CB_ADAPTIVE_THRESH
-        #| cv2.CALIB_CB_FAST_CHECK | cv2.CALIB_CB_NORMALIZE_IMAGE)
+        grayL, (patternX, patternY), None, cv2.CALIB_CB_ADAPTIVE_THRESH
+        | cv2.CALIB_CB_FAST_CHECK | cv2.CALIB_CB_NORMALIZE_IMAGE)
 
     # when found, add object points, image points (after refining them)
 
