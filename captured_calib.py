@@ -1,5 +1,6 @@
 import cv2
 import numpy as np 
+import os
 
 # Define calibration dataset parameters
 
@@ -289,29 +290,6 @@ undistorted_rectifiedR = cv2.remap(frameR, mapR1, mapR2, cv2.INTER_LINEAR)
 undistorted_rectifiedL_lines = draw_lines(undistorted_rectifiedL, (10,10), (0, 0, 255), 1)
 undistorted_rectifiedR_lines = draw_lines(undistorted_rectifiedR, (10,10), (0, 0, 255), 1)
 
-# define display window names
-
-window_nameL = "LEFT Camera Input"  # window name
-window_nameR = "RIGHT Camera Input"  # window name
-
-# create window by name (as resizable)
-
-cv2.namedWindow(window_nameL, cv2.WINDOW_NORMAL)
-cv2.namedWindow(window_nameR, cv2.WINDOW_NORMAL)
-
-# set sizes and set windows
-
-height, width, channels = undistorted_rectifiedL_lines.shape
-cv2.resizeWindow(window_nameL, width, height)
-height, width, channels = undistorted_rectifiedR_lines.shape
-cv2.resizeWindow(window_nameR, width, height)
-
-# display image
-
-cv2.imshow(window_nameL, undistorted_rectifiedL_lines)
-cv2.imshow(window_nameR, undistorted_rectifiedR_lines)
-cv2.waitKey(0)
-
 try:
     os.mkdir('calibration')
 except OSError:
@@ -344,3 +322,26 @@ cv_file.write("F", F)
 cv_file.write("Q", Q)
 cv_file.release()
 print("Exported to path: ", folderName)
+
+# define display window names
+
+window_nameL = "LEFT Camera Input"  # window name
+window_nameR = "RIGHT Camera Input"  # window name
+
+# create window by name (as resizable)
+
+cv2.namedWindow(window_nameL, cv2.WINDOW_NORMAL)
+cv2.namedWindow(window_nameR, cv2.WINDOW_NORMAL)
+
+# set sizes and set windows
+
+height, width, channels = undistorted_rectifiedL_lines.shape
+cv2.resizeWindow(window_nameL, width, height)
+height, width, channels = undistorted_rectifiedR_lines.shape
+cv2.resizeWindow(window_nameR, width, height)
+
+# display image
+
+cv2.imshow(window_nameL, undistorted_rectifiedL_lines)
+cv2.imshow(window_nameR, undistorted_rectifiedR_lines)
+cv2.waitKey(0)
