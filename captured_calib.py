@@ -261,6 +261,10 @@ print(F)
 print()
 print("STEREO: RMS left to  right re-projection error: ", rms_stereo)
 
+RL, RR, PL, PR, Q, _, _ = cv2.stereoRectify(
+    camera_matrix_l, dist_coeffs_l, camera_matrix_r, dist_coeffs_r,
+    grayL.shape[::-1], R, T, alpha=-1)
+
 mapL1, mapL2 = cv2.initUndistortRectifyMap(
     camera_matrix_l, dist_coeffs_l, RL, PL, grayL.shape[::-1],
     cv2.CV_32FC1)
@@ -314,8 +318,7 @@ except OSError:
     print("Exporting to existing calibration archive directory.")
 os.chdir('calibration')
 folderName = time.strftime('%d-%m-%y-%H-%M-rms-') + \
-    '%.2f' % rms_stereo) + '-zed-' + str(int(args.zed)) \
-    + '-ximea-' + str(int(args.ximea))
+    '%.2f' % rms_stereo
 os.mkdir(folderName)
 os.chdir(folderName)
 np.save('mapL1', mapL1)
