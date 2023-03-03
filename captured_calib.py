@@ -274,6 +274,9 @@ print("-> displaying rectification")
 # undistort and rectify based on the mappings (could improve interpolation
 # and image border settase make sure you have the correct access rightings here)
 
+frameL = cv2.imread(f"/media/AC10-0657/images/Set_3/Left/41.jpg")
+frameR = cv2.imread(f"/media/AC10-0657/images/Set_3/Right/41.jpg")
+
 undistorted_rectifiedL = cv2.remap(frameL, mapL1, mapL2, cv2.INTER_LINEAR)
 undistorted_rectifiedR = cv2.remap(frameR, mapR1, mapR2, cv2.INTER_LINEAR)
 
