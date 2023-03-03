@@ -28,7 +28,7 @@ def draw_lines(img, grid_shape, color, thickness):
     # draw horizontal lines
     for y in np.linspace(start=dy, stop=h-dy, num=rows-1):
         y = int(round(y))
-        cv.line(img, (0, y), (w, y), color=color, thickness=thickness)
+        cv2.line(img, (0, y), (w, y), color=color, thickness=thickness)
 
     return img
 
@@ -117,8 +117,129 @@ undistortedR = cv2.undistort(frameR, mtxR, distR, None, None)
 undistortedL_lines = draw_lines(undistortedL, (10,10), (0, 0, 255), 1)
 undistortedR_lines = draw_lines(undistortedR, (10,10), (0, 0, 255), 1)
 
-# display image
+tot_errorL = 0
+for i in range(len(objpoints_left_only)):
+    imgpoints_left_only2, _ = cv2.projectPoints(
+        objpoints_left_only[i], rvecsL[i], tvecsL[i], mtxL, distL)
+    errorL = cv2.norm(
+        imgpoints_left_only[i],
+        imgpoints_left_only2,
+        cv2.NORM_L2) / len(imgpoints_left_only2)
+    tot_errorL += errorL
 
-cv2.imshow("Left", undistortedL_lines)
-cv2.imshow("Right", undistortedR_lines)
-cv2.waitkey(0)
+print("LEFT: mean re-projection error (absolute, px): ",
+        tot_errorL / len(objpoints_left_only))
+
+tot_errorR = 0
+for i in range(len(objpoints_right_only)):
+    imgpoints_right_only2, _ = cv2.projectPoints(
+        objpoints_right_only[i], rvecsR[i], tvecsR[i], mtxR, distR)
+    errorR = cv2.norm(
+        imgpoints_right_only[i],
+        imgpoints_right_only2,
+        cv2.NORM_L2) / len(imgpoints_right_only2)
+    tot_errorR += errorR
+
+print("RIGHT: mean re-projection error (absolute, px): ",
+        tot_errorR / len(objpoints_right_only))
+
+# STAGE 3: perform extrinsic calibration (recovery of relative camera
+# positions)
+
+# this takes the existing calibration parameters used to undistort the
+# individual images as well as calculated the relative camera positions
+# - represented via the fundamental matrix, F
+
+# alter termination criteria to (perhaps) improve solution - ?
+
+termination_criteria_extrinsics = (
+    cv2.TERM_CRITERIA_EPS +
+    cv2.TERM_CRITERIA_MAX_ITER,
+    iterations,
+    minimum_error)
+
+print()
+print("START - extrinsic calibration ...")
+(rms_stereo,
+camera_matrix_l,
+dist_coeffs_l,
+camera_matrix_r,
+dist_coeffs_r,
+R,
+T,
+E,
+F) = cv2.stereoCalibrate(objpoints_pairs,
+                        imgpoints_left_paired,
+                        imgpoints_right_paired,
+                        mtxL,
+                        distL,
+                        mtxR,
+                        distR,
+                        grayL.shape[::-1],
+                        criteria=termination_criteria_extrinsics,
+                        flags=0)
+
+print("FINISHED - extrinsic calibration")
+
+print()
+print("Intrinsic Camera Calibration:")
+print()
+print("Intrinsic Camera Calibration Matrix, K - from \
+        intrinsic calibration:")
+print("(format as follows: fx, fy - focal lengths / cx, \
+        cy - optical centers)")
+print("[fx, 0, cx]\n[0, fy, cy]\n[0,  0,  1]")
+print()
+print("Intrinsic Distortion Co-effients, D - from intrinsic calibration:")
+print("(k1, k2, k3 - radial p1, p2 - tangential distortion coefficients)")
+print("[k1, k2, p1, p2, k3]")
+print()
+print("K (left camera)")
+print(camera_matrix_l)
+print("distortion coeffs (left camera)")
+print(dist_coeffs_l)
+print()
+print("K (right camera)")
+print(camera_matrix_r)
+print("distortion coeffs (right camera)")
+print(dist_coeffs_r)
+
+print()
+print("Extrinsic Camera Calibration:")
+print("Rotation Matrix, R (left -> right camera)")
+print(R)
+print()
+print("Translation Vector, T (left -> right camera)")
+print(T)
+print()
+print("Essential Matrix, E (left -> right camera)")
+print(E)
+print()
+print("Fundamental Matrix, F (left -> right camera)")
+print(F)
+
+print()
+print("STEREO: RMS left to  right re-projection error: ", rms_stereo)
+
+# # define display window names
+
+# window_nameL = "LEFT Camera Input"  # window name
+# window_nameR = "RIGHT Camera Input"  # window name
+
+# # create window by name (as resizable)
+
+# cv2.namedWindow(window_nameL, cv2.WINDOW_NORMAL)
+# cv2.namedWindow(window_nameR, cv2.WINDOW_NORMAL)
+
+# # set sizes and set windows
+
+# height, width, channels = undistortedL_lines.shape
+# cv2.resizeWindow(window_nameL, width, height)
+# height, width, channels = undistortedR_lines.shape
+# cv2.resizeWindow(window_nameR, width, height)
+
+# # display image
+
+# cv2.imshow(window_nameL, undistortedL_lines)
+# cv2.imshow(window_nameR, undistortedR_lines)
+# cv2.waitKey(0)
