@@ -40,9 +40,23 @@ objp = objp * square_size_in_mm
 
 # create arrays to store object points and image points from all the images
 
-objpoints = []    # 3d point in real world space
-imgpoints_R = []  # 2d points in image plane
-imgpoints_L = []  # 2d points in image plane
+# create arrays to store object points and image points from all the images
+
+# ... both for paired chessboard detections (L AND R detected)
+
+objpoints_pairs = []         # 3d point in real world space
+imgpoints_right_paired = []  # 2d points in image plane.
+imgpoints_left_paired = []   # 2d points in image plane.
+
+# ... and for left and right independantly (L OR R detected, OR = logical OR)
+
+objpoints_left_only = []   # 3d point in real world space
+imgpoints_left_only = []   # 2d points in image plane.
+
+objpoints_right_only = []   # 3d point in real world space
+imgpoints_right_only = []   # 2d points in image plane.
+
+# count number of chessboard detection (across both images)
 
 # Begin loop to find chessboard corners
 
@@ -63,21 +77,52 @@ for i in range(1, num_frames + 1):
         retL, cornersL = cv2.findChessboardCorners(grayL, (cbx, cby))
         retR, cornersR = cv2.findChessboardCorners(grayR, (cbx, cby))
 
-        if ((retR) and (retL)):
+        # -- > detected in left (only or also in right)
 
-                # add object points to global list
+    if (retL):
 
-                objpoints.append(objp)
+        chessboard_pattern_detections_left += 1
 
-                # refine corner locations to sub-pixel accuracy
+        # add object points to left list
 
-                corners_sp_L = cv2.cornerSubPix(grayL, cornersL, (11, 11), (-1, -1), termination_criteria_subpix)
-                corners_sp_R = cv2.cornerSubPix(grayR, cornersR, (11, 11), (-1, -1), termination_criteria_subpix)
+        objpoints_left_only.append(objp)
 
-                # add previously refined corner locations to list
+        # refine corner locations to sub-pixel accuracy and then add to list
 
-                imgpoints_L.append(corners_sp_L)
-                imgpoints_R.append(corners_sp_R)
+        corners_sp_L = cv2.cornerSubPix(
+            grayL, cornersL, (11, 11), (-1, -1), termination_criteria_subpix)
+        imgpoints_left_only.append(corners_sp_L)
+
+    # -- > detected in right (only or also in left)
+
+    if (retR):
+
+        chessboard_pattern_detections_right += 1
+
+        # add object points to left list
+
+        objpoints_right_only.append(objp)
+
+        # refine corner locations to sub-pixel accuracy and then add to list
+
+        corners_sp_R = cv2.cornerSubPix(
+            grayR, cornersR, (11, 11), (-1, -1), termination_criteria_subpix)
+        imgpoints_right_only.append(corners_sp_R)
+
+    # -- > detected in left and right
+
+    if ((retR) and (retL)):
+
+        chessboard_pattern_detections_paired += 1
+
+        # add object points to global list
+
+        objpoints_pairs.append(objp)
+
+        # add previously refined corner locations to list
+
+        imgpoints_left_paired.append(corners_sp_L)
+        imgpoints_right_paired.append(corners_sp_R)
 
 print("Pairs Detected: " + str(len(objpoints)))
 
@@ -92,11 +137,12 @@ termination_criteria_intrinsic = (
 print("START - intrinsic calibration ...")
 
 rms_int_L, mtxL, distL, rvecsL, tvecsL = cv2.calibrateCamera(
-    objpoints, imgpoints_L, grayL.shape[::-1],
+    objpoints_left_only, imgpoints_left_only, grayL.shape[::-1],
     None, None, criteria=termination_criteria_intrinsic)
 rms_int_R, mtxR, distR, rvecsR, tvecsR = cv2.calibrateCamera(
-    objpoints, imgpoints_R, grayR.shape[::-1],
+    objpoints_right_only, imgpoints_right_only, grayR.shape[::-1],
     None, None, criteria=termination_criteria_intrinsic)
+    
 print("FINISHED - intrinsic calibration")
 
 print()
