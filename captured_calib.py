@@ -3,7 +3,7 @@ import numpy as np
 
 # Define calibration dataset parameters
 
-num_frames = 64
+num_frames = 90
 cbx = 6
 cby = 8
 square_size_in_mm = 80.8
@@ -15,8 +15,8 @@ minimum_error = 0.001
 termination_criteria_subpix = (
     cv2.TERM_CRITERIA_EPS +
     cv2.TERM_CRITERIA_MAX_ITER,
-    args.iterations,
-    args.minimum_error)
+    iterations,
+    minimum_error)
 
 # Define function for drawing lines on rectified output images
 
@@ -34,8 +34,8 @@ def draw_lines(img, grid_shape, color, thickness):
 
 # prepare object points, like (0,0,0), (1,0,0), (2,0,0) ....,(6,5,0)
 
-objp = np.zeros((patternX * patternY, 3), np.float32)
-objp[:, :2] = np.mgrid[0:patternX, 0:patternY].T.reshape(-1, 2)
+objp = np.zeros((cbx * cby, 3), np.float32)
+objp[:, :2] = np.mgrid[0:cbx, 0:cby].T.reshape(-1, 2)
 objp = objp * square_size_in_mm
 
 # create arrays to store object points and image points from all the images
@@ -50,8 +50,8 @@ for i in range(1, num_frames + 1):
         
         # Fetch image pairs from relevant directory
 
-        frameL = cv2.imread(f"/media/AC10-0657/images/Set_2/Left/{i}.jpg")
-        frameR = cv2.imread(f"/media/AC10-0657/images/Set_2/Right/{i}.jpg")
+        frameL = cv2.imread(f"/media/AC10-0657/images/Set_3/Left/{i}.jpg")
+        frameR = cv2.imread(f"/media/AC10-0657/images/Set_3/Right/{i}.jpg")
 
         # Convert image pairs to grayscale
 
@@ -71,8 +71,8 @@ for i in range(1, num_frames + 1):
 
                 # refine corner locations to sub-pixel accuracy
 
-                corners_sp_L = cv2.cornerSubPix(grayL, cornersL, (11, 11), (-1, -1), termination_criteria)
-                corners_sp_R = cv2.cornerSubPix(grayR, cornersR, (11, 11), (-1, -1), termination_criteria)
+                corners_sp_L = cv2.cornerSubPix(grayL, cornersL, (11, 11), (-1, -1), termination_criteria_subpix)
+                corners_sp_R = cv2.cornerSubPix(grayR, cornersR, (11, 11), (-1, -1), termination_criteria_subpix)
 
                 # add previously refined corner locations to list
 
@@ -86,24 +86,39 @@ print("Pairs Detected: " + str(len(objpoints)))
 termination_criteria_intrinsic = (
     cv2.TERM_CRITERIA_EPS +
     cv2.TERM_CRITERIA_MAX_ITER,
-    args.iterations,
-    args.minimum_error)
+    iterations,
+    minimum_error)
 
 print("START - intrinsic calibration ...")
 
-    rms_int_L, mtxL, distL, rvecsL, tvecsL = cv2.calibrateCamera(
-        objpoints_left_only, imgpoints_left_only, grayL.shape[::-1],
-        None, None, criteria=termination_criteria_intrinsic)
-    rms_int_R, mtxR, distR, rvecsR, tvecsR = cv2.calibrateCamera(
-        objpoints_right_only, imgpoints_right_only, grayR.shape[::-1],
-        None, None, criteria=termination_criteria_intrinsic)
-    print("FINISHED - intrinsic calibration")
+rms_int_L, mtxL, distL, rvecsL, tvecsL = cv2.calibrateCamera(
+    objpoints, imgpoints_L, grayL.shape[::-1],
+    None, None, criteria=termination_criteria_intrinsic)
+rms_int_R, mtxR, distR, rvecsR, tvecsR = cv2.calibrateCamera(
+    objpoints, imgpoints_R, grayR.shape[::-1],
+    None, None, criteria=termination_criteria_intrinsic)
+print("FINISHED - intrinsic calibration")
 
-    print()
-    print("LEFT: RMS left intrinsic calibation re-projection error: ",
-          rms_int_L)
-    print("RIGHT: RMS right intrinsic calibation re-projection error: ",
-          rms_int_R)
-    print()
+print()
+print("LEFT: RMS left intrinsic calibation re-projection error: ",
+        rms_int_L)
+print("RIGHT: RMS right intrinsic calibation re-projection error: ",
+        rms_int_R)
+print()
 
-    
+frameL = cv2.imread(f"/media/AC10-0657/images/Set_3/Left/41.jpg")
+frameR = cv2.imread(f"/media/AC10-0657/images/Set_3/Right/41.jpg")
+
+undistortedL = cv2.undistort(frameL, mtxL, distL, None, None)
+undistortedR = cv2.undistort(frameR, mtxR, distR, None, None)
+
+# draw lines on image to observe quality of undistortion
+
+undistortedL_lines = draw_lines(undistortedL, (10,10), (0, 0, 255), 1)
+undistortedR_lines = draw_lines(undistortedR, (10,10), (0, 0, 255), 1)
+
+# display image
+
+cv2.imshow("Left", undistortedL_lines)
+cv2.imshow("Right", undistortedR_lines)
+cv2.waitkey(0)
