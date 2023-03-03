@@ -81,8 +81,6 @@ for i in range(1, num_frames + 1):
 
         if (retL):
 
-            chessboard_pattern_detections_left += 1
-
             # add object points to left list
 
             objpoints_left_only.append(objp)
@@ -96,8 +94,6 @@ for i in range(1, num_frames + 1):
         # -- > detected in right (only or also in left)
 
         if (retR):
-
-            chessboard_pattern_detections_right += 1
 
             # add object points to left list
 
@@ -113,8 +109,6 @@ for i in range(1, num_frames + 1):
 
         if ((retR) and (retL)):
 
-            chessboard_pattern_detections_paired += 1
-
             # add object points to global list
 
             objpoints_pairs.append(objp)
@@ -124,7 +118,7 @@ for i in range(1, num_frames + 1):
             imgpoints_left_paired.append(corners_sp_L)
             imgpoints_right_paired.append(corners_sp_R)
 
-print("Pairs Detected: " + str(len(objpoints)))
+print("Pairs Detected: " + str(len(objpoints_pairs)))
 
 # perform calibration on both cameras - uses [Zhang, 2000]
 
@@ -267,25 +261,80 @@ print(F)
 print()
 print("STEREO: RMS left to  right re-projection error: ", rms_stereo)
 
-# # define display window names
+mapL1, mapL2 = cv2.initUndistortRectifyMap(
+    camera_matrix_l, dist_coeffs_l, RL, PL, grayL.shape[::-1],
+    cv2.CV_32FC1)
+mapR1, mapR2 = cv2.initUndistortRectifyMap(
+    camera_matrix_r, dist_coeffs_r, RR, PR, grayR.shape[::-1],
+    cv2.CV_32FC1)
 
-# window_nameL = "LEFT Camera Input"  # window name
-# window_nameR = "RIGHT Camera Input"  # window name
+print()
+print("-> displaying rectification")
 
-# # create window by name (as resizable)
+# undistort and rectify based on the mappings (could improve interpolation
+# and image border settase make sure you have the correct access rightings here)
 
-# cv2.namedWindow(window_nameL, cv2.WINDOW_NORMAL)
-# cv2.namedWindow(window_nameR, cv2.WINDOW_NORMAL)
+undistorted_rectifiedL = cv2.remap(frameL, mapL1, mapL2, cv2.INTER_LINEAR)
+undistorted_rectifiedR = cv2.remap(frameR, mapR1, mapR2, cv2.INTER_LINEAR)
 
-# # set sizes and set windows
+# draw lines on image to observe quality of undistortion and rectification
 
-# height, width, channels = undistortedL_lines.shape
-# cv2.resizeWindow(window_nameL, width, height)
-# height, width, channels = undistortedR_lines.shape
-# cv2.resizeWindow(window_nameR, width, height)
+undistorted_rectifiedL_lines = draw_lines(undistorted_rectifiedL, (10,10), (0, 0, 255), 1)
+undistorted_rectifiedR_lines = draw_lines(undistorted_rectifiedR, (10,10), (0, 0, 255), 1)
 
-# # display image
+# define display window names
 
-# cv2.imshow(window_nameL, undistortedL_lines)
-# cv2.imshow(window_nameR, undistortedR_lines)
-# cv2.waitKey(0)
+window_nameL = "LEFT Camera Input"  # window name
+window_nameR = "RIGHT Camera Input"  # window name
+
+# create window by name (as resizable)
+
+cv2.namedWindow(window_nameL, cv2.WINDOW_NORMAL)
+cv2.namedWindow(window_nameR, cv2.WINDOW_NORMAL)
+
+# set sizes and set windows
+
+height, width, channels = undistorted_rectifiedL_lines.shape
+cv2.resizeWindow(window_nameL, width, height)
+height, width, channels = undistorted_rectifiedR_lines.shape
+cv2.resizeWindow(window_nameR, width, height)
+
+# display image
+
+cv2.imshow(window_nameL, undistorted_rectifiedL_lines)
+cv2.imshow(window_nameR, undistorted_rectifiedR_lines)
+cv2.waitKey(0)
+
+try:
+    os.mkdir('calibration')
+except OSError:
+    print("Exporting to existing calibration archive directory.")
+os.chdir('calibration')
+folderName = time.strftime('%d-%m-%y-%H-%M-rms-') + \
+    '%.2f' % rms_stereo) + '-zed-' + str(int(args.zed)) \
+    + '-ximea-' + str(int(args.ximea))
+os.mkdir(folderName)
+os.chdir(folderName)
+np.save('mapL1', mapL1)
+np.save('mapL2', mapL2)
+np.save('mapR1', mapR1)
+np.save('mapR2', mapR2)
+cv_file = cv2.FileStorage("calibration.xml", cv2.FILE_STORAGE_WRITE)
+cv_file.write("source", ' '.join(sys.argv[0:]))
+cv_file.write(
+    "description",
+    "camera matrices K for left and right, distortion coefficients " +
+    "for left and right, 3D rotation matrix R, 3D translation " +
+    "vector T, Essential matrix E, Fundamental matrix F, disparity " +
+    "to depth projection matrix Q")
+cv_file.write("K_l", camera_matrix_l)
+cv_file.write("K_r", camera_matrix_r)
+cv_file.write("distort_l", dist_coeffs_l)
+cv_file.write("distort_r", dist_coeffs_r)
+cv_file.write("R", R)
+cv_file.write("T", T)
+cv_file.write("E", E)
+cv_file.write("F", F)
+cv_file.write("Q", Q)
+cv_file.release()
+print("Exported to path: ", folderName)
