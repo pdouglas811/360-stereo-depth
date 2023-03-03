@@ -42,10 +42,10 @@ def draw_lines(img, grid_shape, color, thickness):
     rows, cols = grid_shape
     dy, dx = h / rows, w / cols
 
-    # draw vertical lines
+    # draw horizontal lines
     for y in np.linspace(start=dy, stop=h-dy, num=rows-1):
         y = int(round(y))
-        cv2.line(img, (y, 0), (y, w), color=color, thickness=thickness)
+        cv.line(img, (0, y), (w, y), color=color, thickness=thickness)
 
     return img
 
