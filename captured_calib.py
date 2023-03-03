@@ -4,7 +4,7 @@ import os
 
 # Define calibration dataset parameters
 
-num_frames = 90
+num_frames = 10
 cbx = 6
 cby = 8
 square_size_in_mm = 80.8
