@@ -277,8 +277,6 @@ def captured_calib(iterations, minimum_error):
         camera_matrix_r, dist_coeffs_r, RR, PR, grayR.shape[::-1],
         cv2.CV_32FC1)
 
-    print()
-    print("-> displaying rectification")
 
     # undistort and rectify based on the mappings (could improve interpolation
     # and image border settase make sure you have the correct access rightings here)
@@ -300,12 +298,17 @@ def captured_calib(iterations, minimum_error):
     grayL = cv2.cvtColor(frameL, cv2.COLOR_BGR2GRAY)
     grayR = cv2.cvtColor(frameR, cv2.COLOR_BGR2GRAY)
 
-     undistort and rectify based on the mappings (could improve interpolation
+    # undistort and rectify based on the mappings (could improve interpolation
     # and image border settings here)
     # N.B. mapping works independant of number of image channels
 
     undistorted_rectifiedL = cv2.remap(grayL, mapL1, mapL2, cv2.INTER_LINEAR)
     undistorted_rectifiedR = cv2.remap(grayR, mapR1, mapR2, cv2.INTER_LINEAR)
+
+    # set up defaults for disparity calculation
+
+    max_disparity = 128
+    stereoProcessor = cv2.StereoSGBM_create(0, max_disparity, 21)
 
     # compute disparity image from undistorted and rectified versions
     # (which for reasons best known to the OpenCV developers is returned
@@ -362,8 +365,8 @@ def captured_calib(iterations, minimum_error):
     print("Exported to path: ", folderName)
     print()
 
-    pathL = "/media/AC10-0657/images/Calibrations/Left"
-    pathR = "/media/AC10-0657/images/Calibrations/Right"
+    pathL = "/media/AC10-0657/images/Calibrations_3/Left"
+    pathR = "/media/AC10-0657/images/Calibrations_3/Right"
     pathD = "/media/AC10-0657/images/Disparity"
 
     imgName = folderName + '-%f' % iterations + '-%f' % minimum_error
@@ -384,7 +387,7 @@ def captured_calib(iterations, minimum_error):
 
     save_my_img(imgName, pathD, disparity_scaled)
     print()
-    print("Saved calibrated images to:", imgName)
+    print("Saved disparity map to:", imgName)
     print()
 
     # # define display window names

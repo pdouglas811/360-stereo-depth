@@ -15,7 +15,7 @@ import camera_stream
 #####################################################################
 # define target framerates in fps (for calibration step only)
 
-calibration_capture_framerate = 10
+calibration_capture_framerate = 0.25
 
 #####################################################################
 # wrap different kinds of stereo camera - standard (v4l/vfw), ximea, ZED
@@ -423,19 +423,19 @@ while (not(do_calibration)):
             name = f'{frame_count}.jpg'
             cv2.imwrite(os.path.join(path, name), img)
 
-        save_my_img(chessboard_pattern_detections_paired, "/media/AC10-0657/images/Set_4/Left", frameL)
+        save_my_img(chessboard_pattern_detections_paired, "/media/AC10-0657/images/Set_6/Left", frameL)
 
-        save_my_img(chessboard_pattern_detections_paired, "/media/AC10-0657/images/Set_4/Right", frameR)  
+        save_my_img(chessboard_pattern_detections_paired, "/media/AC10-0657/images/Set_6/Right", frameR)  
 
     # display detections / chessboards
 
-    text = 'detected L: ' + str(chessboard_pattern_detections_left) + \
-           ' detected R: ' + str(chessboard_pattern_detections_right)
-    cv2.putText(frameL, text, (10, 25),
-                cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2, 8)
+    # text = 'detected L: ' + str(chessboard_pattern_detections_left) + \
+    #        ' detected R: ' + str(chessboard_pattern_detections_right)
+    # cv2.putText(frameL, text, (10, 25),
+    #             cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2, 8)
     text = 'detected (L AND R): ' + str(chessboard_pattern_detections_paired)
     cv2.putText(frameL, text, (10, 60),
-                cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2, 8)
+                cv2.FONT_HERSHEY_SIMPLEX, 2, (0, 255, 0), 2, 8)
 
     # draw the corners / chessboards
 
