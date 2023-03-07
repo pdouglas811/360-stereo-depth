@@ -1,0 +1,75 @@
+<?xml version="1.0"?>
+<opencv_storage>
+<source>captured_calib.py</source>
+<description>"camera matrices K for left and right, distortion coefficients for left and right, 3D rotation matrix R, 3D translation vector T, Essential matrix E, Fundamental matrix F, disparity to depth projection matrix Q"</description>
+<K_l type_id="opencv-matrix">
+  <rows>3</rows>
+  <cols>3</cols>
+  <dt>d</dt>
+  <data>
+    8.3154795928119893e+02 0. 2.8815411212916280e+02 0.
+    8.4222396198048671e+02 9.6861916903303597e+02 0. 0. 1.</data></K_l>
+<K_r type_id="opencv-matrix">
+  <rows>3</rows>
+  <cols>3</cols>
+  <dt>d</dt>
+  <data>
+    1.0964873348373474e+03 0. 3.2588951511613453e+02 0.
+    9.0969068561459369e+02 9.2277826032327891e+02 0. 0. 1.</data></K_r>
+<distort_l type_id="opencv-matrix">
+  <rows>1</rows>
+  <cols>5</cols>
+  <dt>d</dt>
+  <data>
+    -2.6104318622703554e-01 8.6367068759587148e-02
+    3.0749559046588264e-02 1.6027492958101011e-03
+    -9.7976007551545726e-03</data></distort_l>
+<distort_r type_id="opencv-matrix">
+  <rows>1</rows>
+  <cols>5</cols>
+  <dt>d</dt>
+  <data>
+    -4.8077626575801741e-01 2.8447091290268461e-01
+    2.9950573472301532e-03 4.8767053203938541e-03
+    -6.1100512841716241e-02</data></distort_r>
+<R type_id="opencv-matrix">
+  <rows>3</rows>
+  <cols>3</cols>
+  <dt>d</dt>
+  <data>
+    9.9956263274545176e-01 1.7601079704584355e-02
+    -2.3764368542292559e-02 -1.5703824362525865e-02
+    9.9684613814393885e-01 7.7789245837109236e-02 2.5058593722952101e-02
+    -7.7382031898549600e-02 9.9668655454956345e-01</data></R>
+<T type_id="opencv-matrix">
+  <rows>3</rows>
+  <cols>1</cols>
+  <dt>d</dt>
+  <data>
+    7.9488991388839011e+01 3.8344924355688505e+01 2.3628256348896794e+01</data></T>
+<E type_id="opencv-matrix">
+  <rows>3</rows>
+  <cols>3</cols>
+  <dt>d</dt>
+  <data>
+    1.3319238684623411e+00 -2.6520944252112134e+01
+    3.6379846298708244e+01 2.1626039782627561e+01 6.5669024905119588e+00
+    -7.9787119543848817e+01 -3.9576434700921858e+01
+    7.8563382021070240e+01 7.0946316066051685e+00</data></E>
+<F type_id="opencv-matrix">
+  <rows>3</rows>
+  <cols>3</cols>
+  <dt>d</dt>
+  <data>
+    2.1132375932658622e-07 -4.1544890407877854e-06
+    8.7629570132898328e-03 4.1357644472267293e-06 1.2399354432592290e-06
+    -1.5080929784018992e-02 -1.0770345249362902e-02
+    1.3704083096313463e-02 9.9999999999999989e-01</data></F>
+<Q type_id="opencv-matrix">
+  <rows>4</rows>
+  <cols>4</cols>
+  <dt>d</dt>
+  <data>
+    1. 0. 0. -4.1767650604248047e+01 0. 1. 0. -1.1752882385253906e+03 0.
+    0. 0. 8.7595732379754020e+02 0. 0. -1.0945395955958833e-02 0.</data></Q>
+</opencv_storage>
