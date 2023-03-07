@@ -10,7 +10,7 @@ def captured_calib(iterations, minimum_error):
 
     # Define calibration dataset parameters
 
-    num_frames = 90
+    num_frames = 10
     cbx = 6
     cby = 8
     square_size_in_mm = 80.8
@@ -294,6 +294,39 @@ def captured_calib(iterations, minimum_error):
     undistorted_rectifiedL_lines = draw_lines(undistorted_rectifiedL, (10,10), (0, 0, 255), 1)
     undistorted_rectifiedR_lines = draw_lines(undistorted_rectifiedR, (10,10), (0, 0, 255), 1)
 
+    # remember to convert to grayscale (as the disparity matching works on
+    # grayscale)
+
+    grayL = cv2.cvtColor(frameL, cv2.COLOR_BGR2GRAY)
+    grayR = cv2.cvtColor(frameR, cv2.COLOR_BGR2GRAY)
+
+     undistort and rectify based on the mappings (could improve interpolation
+    # and image border settings here)
+    # N.B. mapping works independant of number of image channels
+
+    undistorted_rectifiedL = cv2.remap(grayL, mapL1, mapL2, cv2.INTER_LINEAR)
+    undistorted_rectifiedR = cv2.remap(grayR, mapR1, mapR2, cv2.INTER_LINEAR)
+
+    # compute disparity image from undistorted and rectified versions
+    # (which for reasons best known to the OpenCV developers is returned
+    # scaled by 16)
+
+    disparity = stereoProcessor.compute(
+        undistorted_rectifiedL, undistorted_rectifiedR)
+    cv2.filterSpeckles(disparity, 0, 40, max_disparity)
+
+    # scale the disparity to 8-bit for viewing
+    # divide by 16 and convert to 8-bit image (then range of values should
+    # be 0 -> max_disparity) but in fact is (-1 -> max_disparity - 1)
+    # so we fix this also using a initial threshold between 0 -> max_disparity
+    # as disparity=-1 means no disparity available
+
+    _, disparity = cv2.threshold(
+        disparity, 0, max_disparity * 16, cv2.THRESH_TOZERO)
+    disparity_scaled = (disparity / 16.).astype(np.uint8)
+
+    # Saves calibrations and images generated
+
     try:
         os.mkdir('calibration')
     except OSError:
@@ -331,16 +364,25 @@ def captured_calib(iterations, minimum_error):
 
     pathL = "/media/AC10-0657/images/Calibrations/Left"
     pathR = "/media/AC10-0657/images/Calibrations/Right"
+    pathD = "/media/AC10-0657/images/Disparity"
 
-    imgName = folderName + '-%.2f' % iterations + '-%.2f' % minimum_error
+    imgName = folderName + '-%f' % iterations + '-%f' % minimum_error
 
     def save_my_img(imgName, path, img):
         name = f'{imgName}.jpg'
         cv2.imwrite(os.path.join(path, name), img)
 
+    # Save undistorted rectified image for calibration quality check
 
-    save_my_img(folderName, pathL, undistorted_rectifiedL_lines)
-    save_my_img(folderName, pathR, undistorted_rectifiedR_lines)
+    save_my_img(imgName, pathL, undistorted_rectifiedL_lines)
+    save_my_img(imgName, pathR, undistorted_rectifiedR_lines)
+    print()
+    print("Saved calibrated images to:", imgName)
+    print()
+
+    # Save disparity map for calibration quality check
+
+    save_my_img(imgName, pathD, disparity_scaled)
     print()
     print("Saved calibrated images to:", imgName)
     print()
@@ -368,8 +410,8 @@ def captured_calib(iterations, minimum_error):
     # cv2.imshow(window_nameR, undistorted_rectifiedR_lines)
     # cv2.waitKey(0)
 
-iterations = [100, 200, 300, 400, 500, 600, 700, 800, 1000]
-minimum_error = [0.1, 0.01, 0.001, 0.0001, 0.00001]
+iterations = [100]#, 200, 300, 400, 500, 600, 700, 800, 1000]
+minimum_error = [0.1]#, 0.01, 0.001, 0.0001, 0.00001]
 
 for i in iterations:
 

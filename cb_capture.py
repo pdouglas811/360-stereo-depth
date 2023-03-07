@@ -15,7 +15,7 @@ import camera_stream
 #####################################################################
 # define target framerates in fps (for calibration step only)
 
-calibration_capture_framerate = 2
+calibration_capture_framerate = 10
 
 #####################################################################
 # wrap different kinds of stereo camera - standard (v4l/vfw), ximea, ZED
@@ -423,9 +423,9 @@ while (not(do_calibration)):
             name = f'{frame_count}.jpg'
             cv2.imwrite(os.path.join(path, name), img)
 
-        save_my_img(chessboard_pattern_detections_paired, "/media/AC10-0657/images/Set_2/Left", frameL)
+        save_my_img(chessboard_pattern_detections_paired, "/media/AC10-0657/images/Set_4/Left", frameL)
 
-        save_my_img(chessboard_pattern_detections_paired, "/media/AC10-0657/images/Set_2/Right", frameR)  
+        save_my_img(chessboard_pattern_detections_paired, "/media/AC10-0657/images/Set_4/Right", frameR)  
 
     # display detections / chessboards
 
