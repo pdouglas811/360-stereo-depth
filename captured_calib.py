@@ -6,11 +6,10 @@ import sys
 
 # Defines the entire code as a function
 
-def captured_calib(iterations, minimum_error):
+def captured_calib(iterations, minimum_error, setNumber, num_frames):
 
     # Define calibration dataset parameters
 
-    num_frames = 10
     cbx = 6
     cby = 8
     square_size_in_mm = 80.8
@@ -65,12 +64,14 @@ def captured_calib(iterations, minimum_error):
 
     # Begin loop to find chessboard corners
 
+    y = 1
+
     for i in range(1, num_frames + 1):
             
             # Fetch image pairs from relevant directory
 
-            frameL = cv2.imread(f"/media/AC10-0657/images/Set_3/Left/{i}.jpg")
-            frameR = cv2.imread(f"/media/AC10-0657/images/Set_3/Right/{i}.jpg")
+            frameL = cv2.imread(f"/media/AC10-0657/images/Set_{setNumber}/Left/{i}.jpg")
+            frameR = cv2.imread(f"/media/AC10-0657/images/Set_{setNumber}/Right/{i}.jpg")
 
             # Convert image pairs to grayscale
 
@@ -122,6 +123,9 @@ def captured_calib(iterations, minimum_error):
 
                 imgpoints_left_paired.append(corners_sp_L)
                 imgpoints_right_paired.append(corners_sp_R)
+                print(y)
+            
+            y = y+1
 
     print("Pairs Detected: " + str(len(objpoints_pairs)))
 
@@ -151,8 +155,8 @@ def captured_calib(iterations, minimum_error):
             rms_int_R)
     print()
 
-    frameL = cv2.imread(f"/media/AC10-0657/images/Set_3/Left/41.jpg")
-    frameR = cv2.imread(f"/media/AC10-0657/images/Set_3/Right/41.jpg")
+    frameL = cv2.imread(f"/media/AC10-0657/images/Set_{setNumber}/Left/16.jpg")
+    frameR = cv2.imread(f"/media/AC10-0657/images/Set_{setNumber}/Right/16.jpg")
 
     undistortedL = cv2.undistort(frameL, mtxL, distL, None, None)
     undistortedR = cv2.undistort(frameR, mtxR, distR, None, None)
@@ -281,8 +285,8 @@ def captured_calib(iterations, minimum_error):
     # undistort and rectify based on the mappings (could improve interpolation
     # and image border settase make sure you have the correct access rightings here)
 
-    frameL = cv2.imread(f"/media/AC10-0657/images/Set_3/Left/41.jpg")
-    frameR = cv2.imread(f"/media/AC10-0657/images/Set_3/Right/41.jpg")
+    frameL = cv2.imread(f"/media/AC10-0657/images/Set_{setNumber}/Left/16.jpg")
+    frameR = cv2.imread(f"/media/AC10-0657/images/Set_{setNumber}/Right/16.jpg")
 
     undistorted_rectifiedL = cv2.remap(frameL, mapL1, mapL2, cv2.INTER_LINEAR)
     undistorted_rectifiedR = cv2.remap(frameR, mapR1, mapR2, cv2.INTER_LINEAR)
@@ -365,9 +369,9 @@ def captured_calib(iterations, minimum_error):
     print("Exported to path: ", folderName)
     print()
 
-    pathL = "/media/AC10-0657/images/Calibrations_3/Left"
-    pathR = "/media/AC10-0657/images/Calibrations_3/Right"
-    pathD = "/media/AC10-0657/images/Disparity"
+    pathL = f"/media/AC10-0657/images/Calibrations_{setNumber}/Left"
+    pathR = f"/media/AC10-0657/images/Calibrations_{setNumber}/Right"
+    pathD = f"/media/AC10-0657/images/Disparity"
 
     imgName = folderName + '-%f' % iterations + '-%f' % minimum_error
 
@@ -413,18 +417,27 @@ def captured_calib(iterations, minimum_error):
     # cv2.imshow(window_nameR, undistorted_rectifiedR_lines)
     # cv2.waitKey(0)
 
-iterations = [100]#, 200, 300, 400, 500, 600, 700, 800, 1000]
-minimum_error = [0.1]#, 0.01, 0.001, 0.0001, 0.00001]
+iterations = [100, 200, 300, 400, 500, 600, 700, 800, 1000]
+minimum_error = [0.1, 0.01, 0.001, 0.0001, 0.00001]#
+setNumber = [6,5,6]
+x = 0
+num_frames_array = [30, 27, 30]
 
-for i in iterations:
+for k in setNumber:
 
-    for j in minimum_error:
+    num_frames = num_frames_array[x]
+    
+    for i in iterations:
 
-        captured_calib(i, j)
-        
-        print()
-        print("Calibration complete!")
-        print()
+        for j in minimum_error:
+
+            captured_calib(i, j, k, num_frames)
+            
+            print()
+            print("Calibration complete!")
+            print()
+
+    x = x+1
 
 print()
 print("All calibrations complete!")
